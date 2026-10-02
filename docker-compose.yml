@@ -1,0 +1,42 @@
+# P-TRANSMIT AI — local development with Docker Compose
+# (PostgreSQL option; the app also runs fine on SQLite without Docker)
+#
+#   docker compose up --build
+#   Backend:  http://127.0.0.1:8000/api/health
+#   Frontend: http://127.0.0.1:8000/app  (built UI served by the API)
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ptransmit
+      POSTGRES_PASSWORD: ptransmit-dev-only
+      POSTGRES_DB: ptransmit
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ptransmit"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://ptransmit:ptransmit-dev-only@db:5432/ptransmit
+      SECRET_KEY: change-me-in-real-deployments
+      DEMO_MODE: "true"
+      CORS_ORIGINS: "http://localhost:5173,http://127.0.0.1:5173"
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data/geo:/app/data/geo:ro
+      - ./models:/app/models
+
+volumes:
+  pgdata:

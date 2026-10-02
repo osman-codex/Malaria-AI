@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P-TRANSMIT AI — Malaria Transmission Intelligence | KCCR · KNUST</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600;9..144,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --knust-red:#8f141b; --knust-red-deep:#6e0f15;
+    --green:#0b6e4f; --green-deep:#085239;
+    --gold:#d4a017; --gold-soft:#e8c979;
+    --navy:#0d1f2d; --navy-2:#122a3c;
+    --ink:#16232b; --muted:#5a6b76; --line:#d7dee3;
+    --paper:#ffffff; --bg:#eef1f3;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    font-family:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+    background:var(--bg); color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  .deck{position:relative;height:100vh;width:100vw;overflow:hidden;}
+
+  /* ---------- Slide frame ---------- */
+  .slide{
+    position:absolute;inset:0;display:none;flex-direction:column;
+    padding:52px 68px 74px;
+    background:
+      radial-gradient(1100px 500px at 85% -10%, rgba(11,110,79,.08), transparent 60%),
+      radial-gradient(900px 420px at -10% 110%, rgba(143,20,27,.06), transparent 55%),
+      var(--bg);
+  }
+  .slide.active{display:flex;}
+  .slide-inner{flex:1;display:flex;flex-direction:column;min-height:0;}
+
+  /* ---------- Top brand strip ---------- */
+  .brandbar{
+    display:flex;align-items:center;gap:14px;
+    padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:26px;
+  }
+  .brandbar img{height:46px;width:auto;display:block;}
+  .brandbar .seal{height:50px;}
+  .brandbar .divider{width:1px;height:34px;background:var(--line);}
+  .brandbar .t{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;line-height:1.45;}
+  .brandbar .spacer{flex:1;}
+  .brandbar .tag{
+    font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;
+    color:var(--green);border:1px solid var(--green);border-radius:999px;padding:5px 12px;
+  }
+
+  /* ---------- Typography ---------- */
+  .kicker{
+    font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;
+    color:var(--knust-red);margin-bottom:10px;display:flex;align-items:center;gap:10px;
+  }
+  .kicker::before{content:"";width:26px;height:2px;background:var(--gold);}
+  h1{font-family:"Fraunces",Georgia,serif;font-weight:600;line-height:1.05;}
+  h2{
+    font-family:"Fraunces",Georgia,serif;font-weight:600;
+    font-size:clamp(26px,3.4vw,40px);line-height:1.12;margin-bottom:8px;
+  }
+  .sub{color:var(--muted);font-size:15.5px;line-height:1.55;max-width:900px;}
+
+  /* ---------- Footer ---------- */
+  .footer{
+    position:absolute;left:68px;right:68px;bottom:22px;
+    display:flex;align-items:center;gap:12px;
+    font-size:11px;color:var(--muted);letter-spacing:.02em;
+  }
+  .footer .line{flex:1;height:1px;background:var(--line);}
+  .footer .flag{display:flex;gap:4px;}
+  .footer .flag i{width:16px;height:4px;border-radius:2px;display:block;}
+  .footer .flag .g{background:var(--green);} .footer .flag .y{background:var(--gold);} .footer .flag .r{background:var(--knust-red);}
+
+  /* ---------- Cards & grids ---------- */
+  .grid{display:grid;gap:18px;margin-top:26px;}
+  .g2{grid-template-columns:1fr 1fr;} .g3{grid-template-columns:1fr 1fr 1fr;} .g4{grid-template-columns:repeat(4,1fr);}
+  .card{
+    background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:22px 24px;
+    box-shadow:0 1px 2px rgba(13,31,45,.04),0 10px 28px -18px rgba(13,31,45,.18);
+  }
+  .card h3{font-size:15.5px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:9px;}
+  .card p{font-size:13.5px;line-height:1.6;color:var(--muted);}
+  .card ul{margin:8px 0 0 2px;list-style:none;}
+  .card li{font-size:13.5px;line-height:1.55;color:#3c4b55;padding:5px 0 5px 20px;position:relative;}
+  .card li::before{content:"";position:absolute;left:2px;top:12px;width:7px;height:7px;border-radius:50%;background:var(--gold);}
+  .icon{
+    width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;
+    font-size:15px;flex:0 0 auto;background:rgba(11,110,79,.1);
+  }
+  .num{
+    font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:34px;color:var(--green);line-height:1;
+  }
+  .lbl{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:4px;}
+  .red{color:var(--knust-red);} .green{color:var(--green);} .gold{color:var(--gold);}
+
+  /* ---------- Title slide ---------- */
+  .slide.title-slide{
+    background:
+      radial-gradient(1200px 600px at 80% -20%, rgba(212,160,23,.16), transparent 60%),
+      linear-gradient(152deg, var(--navy) 0%, var(--navy-2) 52%, #1a3c50 100%);
+    color:#f4f7f8;padding:0;
+  }
+  .title-slide .frame{position:absolute;inset:26px;border:1px solid rgba(232,201,121,.35);border-radius:18px;pointer-events:none;}
+  .title-slide .frame::before{content:"";position:absolute;inset:7px;border:1px solid rgba(232,201,121,.18);border-radius:12px;}
+  .title-slide .inner{
+    position:relative;flex:1;display:flex;flex-direction:column;
+    padding:60px 84px;
+  }
+  .title-slide .logos{display:flex;align-items:center;gap:22px;margin-bottom:44px;}
+  .title-slide .logos img{height:78px;width:auto;filter:drop-shadow(0 4px 14px rgba(0,0,0,.35));}
+  .title-slide .logos img.seal{height:84px;border-radius:8px;background:#fff;padding:5px;}
+  .title-slide .logos .divider{width:1px;height:56px;background:rgba(232,201,121,.4);}
+  .title-slide .logos .names{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;line-height:1.8;color:#cfd9df;font-weight:600;}
+  .title-slide .kicker{color:var(--gold-soft);}
+  .title-slide .kicker::before{background:var(--gold);}
+  .title-slide h1{font-size:clamp(42px,5.6vw,68px);letter-spacing:-.01em;margin-bottom:14px;}
+  .title-slide h1 em{font-style:normal;color:var(--gold-soft);}
+  .title-slide .sub{color:#b9c7d0;font-size:17px;max-width:820px;}
+  .title-slide .meta{
+    margin-top:auto;display:flex;gap:34px;flex-wrap:wrap;
+    font-size:12.5px;color:#aebbc4;letter-spacing:.04em;
+  }
+  .title-slide .meta b{color:#eef3f5;font-weight:600;display:block;font-size:13px;margin-bottom:2px;}
+  .title-slide .rule{width:88px;height:3px;background:linear-gradient(90deg,var(--knust-red),var(--gold),var(--green));border-radius:2px;margin:18px 0 20px;}
+
+  /* ---------- Agenda ---------- */
+  .agenda{display:grid;grid-template-columns:1fr 1fr;gap:10px 34px;margin-top:26px;}
+  .agenda .item{
+    display:flex;gap:14px;align-items:baseline;background:var(--paper);
+    border:1px solid var(--line);border-radius:10px;padding:13px 16px;
+  }
+  .agenda .n{
+    font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:17px;color:var(--knust-red);
+    min-width:26px;
+  }
+  .agenda .item b{font-size:14px;font-weight:600;display:block;}
+  .agenda .item span{font-size:12px;color:var(--muted);}
+
+  /* ---------- Species table ---------- */
+  table.spec{width:100%;border-collapse:collapse;margin-top:22px;background:#fff;border-radius:12px;overflow:hidden;border:1px solid var(--line);}
+  table.spec th{background:var(--navy);color:#eef3f5;font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:11px 14px;text-align:left;font-weight:600;}
+  table.spec td{padding:11px 14px;font-size:13px;border-top:1px solid #e8edf0;color:#33424c;vertical-align:top;line-height:1.5;}
+  table.spec td b{color:var(--ink);}
+  table.spec tr td:first-child{font-weight:700;font-style:italic;color:var(--knust-red);white-space:nowrap;}
+
+  /* ---------- Pipeline ---------- */
+  .pipeline{display:flex;gap:0;align-items:stretch;margin-top:30px;}
+  .stage{flex:1;background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;position:relative;}
+  .stage + .stage{margin-left:26px;}
+  .stage + .stage::before{
+    content:"→";position:absolute;left:-22px;top:50%;transform:translateY(-50%);
+    color:var(--gold);font-size:18px;font-weight:700;
+  }
+  .stage .sn{font-size:10.5px;letter-spacing:.12em;font-weight:700;color:var(--green);text-transform:uppercase;margin-bottom:6px;}
+  .stage b{font-size:13.5px;display:block;margin-bottom:5px;}
+  .stage p{font-size:12px;color:var(--muted);line-height:1.5;}
+
+  /* ---------- Bars ---------- */
+  .bars{margin-top:22px;display:flex;flex-direction:column;gap:12px;}
+  .bar-row{display:grid;grid-template-columns:220px 1fr 64px;gap:14px;align-items:center;font-size:13px;}
+  .bar-row .track{height:14px;border-radius:7px;background:#dde4e8;overflow:hidden;}
+  .bar-row .fill{height:100%;border-radius:7px;background:linear-gradient(90deg,var(--green),#12906a);}
+  .bar-row.alt .fill{background:linear-gradient(90deg,var(--knust-red),#b3333b);}
+  .bar-row b{font-weight:600;color:var(--ink);}
+  .bar-row .val{font-weight:700;color:var(--green);text-align:right;}
+  .bar-row.alt .val{color:var(--knust-red);}
+  .src{font-size:10.5px;color:#8a99a3;margin-top:14px;letter-spacing:.02em;}
+
+  /* ---------- Big numbers strip ---------- */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:26px;}
+  .stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px 22px;}
+  .stat .num{font-size:38px;}
+  .stat p{font-size:12px;color:var(--muted);line-height:1.5;margin-top:6px;}
+
+  /* ---------- Roadmap ---------- */
+  .phases{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:26px;}
+  .phase{border-radius:14px;padding:20px 22px;background:#fff;border:1px solid var(--line);border-top:4px solid var(--green);}
+  .phase.p2{border-top-color:var(--gold);}
+  .phase.p3{border-top-color:var(--knust-red);}
+  .phase .pn{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--muted);}
+  .phase h3{margin:6px 0 8px;}
+  .phase li{font-size:12.5px;}
+
+  /* ---------- Closing ---------- */
+  .slide.closing{background:linear-gradient(152deg,var(--navy) 0%,var(--navy-2) 55%,#1a3c50 100%);color:#f4f7f8;}
+  .closing .brandbar{border-color:rgba(232,201,121,.25);}
+  .closing .brandbar .t{color:#aebbc4;}
+  .closing .brandbar .tag{color:var(--gold-soft);border-color:var(--gold-soft);}
+  .closing h2{color:#fff;}
+  .closing .sub{color:#b9c7d0;}
+  .closing .card{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.14);box-shadow:none;}
+  .closing .card h3{color:#eef3f5;}
+  .closing .card p{color:#aebbc4;}
+  .closing .card li{color:#c5d1d8;}
+  .closing .footer{color:#8fa0ac;}
+  .closing .footer .line{background:rgba(255,255,255,.16);}
+
+  /* ---------- Controls ---------- */
+  .controls{
+    position:fixed;right:22px;bottom:18px;display:flex;gap:8px;z-index:50;
+  }
+  .controls button{
+    width:38px;height:38px;border-radius:50%;border:1px solid var(--line);
+    background:#fff;color:var(--ink);font-size:16px;cursor:pointer;
+    box-shadow:0 2px 8px rgba(13,31,45,.12);transition:all .15s;
+  }
+  .controls button:hover{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .counter{
+    position:fixed;left:22px;bottom:26px;z-index:50;
+    font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.06em;
+    background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 14px;
+    box-shadow:0 2px 8px rgba(13,31,45,.08);
+  }
+  .progress{position:fixed;left:0;top:0;height:3px;background:linear-gradient(90deg,var(--knust-red),var(--gold),var(--green));z-index:60;transition:width .25s;}
+  .hint{
+    position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:50;
+    font-size:11px;color:#9aa9b2;letter-spacing:.04em;
+  }
+
+  /* ---------- Print ---------- */
+  @media print{
+    body{background:#fff;}
+    .deck{height:auto;overflow:visible;}
+    .slide{display:flex !important;position:relative;inset:auto;page-break-after:always;height:100vh;}
+    .controls,.counter,.hint,.progress{display:none !important;}
+    @page{size:A4 landscape;margin:0;}
+  }
+  @media (max-width:980px){
+    .slide{padding:34px 30px 64px;}
+    .g2,.g3,.g4,.stats,.phases,.agenda{grid-template-columns:1fr;}
+    .pipeline{flex-direction:column;}
+    .stage + .stage{margin-left:0;margin-top:26px;}
+    .stage + .stage::before{content:"↓";left:50%;top:-22px;transform:translateX(-50%);}
+    .footer{left:30px;right:30px;}
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="deck" id="deck">
+
+<!-- ============ SLIDE 1 · TITLE ============ -->
+<section class="slide title-slide active">
+  <div class="frame"></div>
+  <div class="inner">
+    <div class="logos">
+      <img src="assets/kccr_knust.png" alt="KCCR and KNUST logos">
+      <div class="divider"></div>
+      <img class="seal" src="assets/knust_seal.jpg" alt="KNUST seal">
+      <div class="names">
+        Kumasi Centre for Collaborative Research<br>in Tropical Medicine · KNUST, Kumasi, Ghana
+      </div>
+    </div>
+    <div class="kicker">Research Seminar · AI in Public Health</div>
+    <h1>Artificial Intelligence for<br><em>Malaria Transmission</em> Intelligence</h1>
+    <div class="rule"></div>
+    <p class="sub">From Plasmodium biology and vector dynamics to machine-learning surveillance — and the P-TRANSMIT AI platform, a decision-support system for Ghana's malaria elimination agenda.</p>
+    <div class="meta">
+      <div><b>Presenter</b>[Your Name]</div>
+      <div><b>Institutions</b>KCCR · KNUST · Kumasi, Ghana</div>
+      <div><b>Platform</b>P-TRANSMIT AI v0.1</div>
+      <div><b>Date</b>September 2026</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 2 · AGENDA ============ -->
+<section class="slide">
+  <div class="brandbar">
+    <img src="assets/kccr_knust.png" alt="KCCR · KNUST">
+    <div class="divider"></div><span class="t">KCCR · KNUST — Malaria AI Seminar</span>
+    <div class="spacer"></div><span class="tag">Agenda</span>
+  </div>
+  <div class="slide-inner">
+    <div class="kicker">Roadmap</div>
+    <h2>What we will cover</h2>
+    <div class="agenda">
+      <div class="item"><span class="n">01</span><div><b>The malaria problem in Ghana</b><span>Burden, geography, elimination targets</span></div></div>
+      <div class="item"><span class="n">02</span><div><b>Plasmodium — the parasite</b><span>Species, life cycle, genome</span></div></div>
+      <div class="item"><span class="n">03</span><div><b>Transmission dynamics</b><span>Vectors, seasonality, environment</span></div></div>
+      <div class="item"><span class="n">04</span><div><b>Why AI, why now</b><span>Limitations of classical methods</span></div></div>
+      <div class="item"><span class="n">05</span><div><b>AI in transmission studies</b><span>Methods landscape &amp; adoption</span></div></div>
+      <div class="item"><span class="n">06</span><div><b>P-TRANSMIT AI platform</b><span>Live demo modules</span></div></div>
+      <div class="item"><span class="n">07</span><div><b>Genomics &amp; resistance</b><span>Molecular surveillance meets AI</span></div></div>
+      <div class="item"><span class="n">08</span><div><b>Responsible AI &amp; roadmap</b><span>Governance, limits, next steps</span></div></div>
+    </div>
+  </div>
+  <div class="footer"><span class="flag"><i class="g"></i><i class="y"></i><i class="r"></i></span><span>KCCR · KNUST · P-TRANSMIT AI</span><div class="line"></div><span>02 / 15</span></div>
+</section>
+
+<!-- ============ SLIDE 3 · MALARIA IN GHANA ============ -->
+<section class="slide">
+  <div class="brandbar">
+    <img src="assets/kccr_knust.png" alt="KCCR · KNUST">
+    <div class="divider"></div><span class="t">KCCR · KNUST — Malaria AI Seminar</span>
+    <div class="spacer"></div><span class="tag">Background</span>
+  </div>
+  <div class="slide-inner">
+    <div class="kicker">The problem</div>
+    <h2>Malaria in Ghana — a persistent national burden</h2>
+    <p class="sub">Malaria remains endemic across all 16 regions, with transmission shaped by rainfall, temperature, land use and health-system capacity. Ghana is a target country of the national malaria elimination agenda, making <b>precise, timely surveillance</b> the central operational challenge.</p>
+    <div class="stats">
+      <div class="stat"><div class="num red">~5M+</div><div class="lbl">Suspected cases / yr</div><p>Tested at health facilities nationwide (NMCP reporting)</p></div>
+      <div class="stat"><div class="num">Top&nbsp;3</div><div class="lbl">Cause of OPD attendance</div><p>Malaria consistently ranks among top outpatient reasons</p></div>
+      <div class="stat"><div class="num gold">&lt;5</div><div class="lbl">Highest-risk groups</div><p>Children under five and pregnant women bear most severe disease</p></div>
+      <div class="stat"><div class="num green">16</div><div class="lbl">Regions, unequal risk</div><p>Forest, coastal and northern savannah zones differ in seasonality</p></div>
+    </div>
+    <div class="grid g2" style="margin-top:20px;">
+      <div class="card"><h3><span class="icon">📉</span>Why burden persists</h3><ul><li>Year-round transmission in southern &amp; forest zones; sharp seasonal peaks in the north</li><li>Insecticide &amp; drug pressure evolving — <i>Anopheles</i> resistance, pfhrp2/3 deletions, emerging artemisinin markers</li></ul></div>
+      <div class="card"><h3><span class="icon">🎯</span>What elimination demands</h3><ul><li>Forward-looking, region-level forecasting — not retrospective reporting</li><li>Integration of cases, environment, vector and genomic data in one decision surface</li></ul></div>
+    </div>
+  </div>
+  <div class="footer"><span class="flag"><i class="g"></i><i class="y"></i><i class="r"></i></span><span>KCCR · KNUST · P-TRANSMIT AI</span><div class="line"></div><span>03 / 15</span></div>
+</section>
+
+<!-- ============ SLIDE 4 · PLASMODIUM ============ -->
+<section class="slide">
+  <div class="brandbar">
+    <img src="assets/kccr_knust.png" alt="KCCR · KNUST">
+    <div class="divider"></div><span class="t">KCCR · KNUST — Malaria AI Seminar</span>
+    <div class="spacer"></div><span class="tag">The Parasite</span>
+  </div>
+  <div class="slide-inner">
+    <div class="kicker">Biology</div>
+    <h2>Plasmodium — four species, one disease burden</h2>
+    <table class="spec">
+      <tr><th>Species</th><th>Global / Ghanaian role</th><th>Key biological traits</th><th>Surveillance relevance</th></tr>
+      <tr><td>P. falciparum</td><td>Dominant worldwide and in Ghana (&gt;95% of cases)</td><td>High parasitaemia, cytoadherence, severe disease; ~72-hr erythrocytic cycle</td><td>Primary target for forecasting &amp; resistance-genomics modules</td></tr>
+      <tr><td>P. vivax</td><td>Rare in Ghana; major burden in Asia &amp; Americas</td><td>Dormant liver hypnozoites → relapses weeks–months later</td><td>Relapse dynamics are a classic time-series modelling challenge</td></tr>
+      <tr><td>P. malariae</td><td>Low prevalence, often co-infections</td><td>Quotidian/quartan cycle; chronic low-grade parasitaemia</td><td>Long incubation complicates case-attribution models</td></tr>
+      <tr><td>P. ovale</td><td>Sparse; West Africa coastal presence</td><td>Hypnozoite relapses like vivax; mild fever episodes</td><td>Species-mixing affects case-definition in datasets</td></tr>
+    </table>
+    <div class="grid g3" style="margin-top:20px;">
+      <div class="card"><h3><span class="icon">🧬</span>A compact genome</h3><p>~23 Mb across 14 chromosomes, ~5,300 genes — small enough for full population-genomic surveillance, large enough to hide resistance and immune-evasion variants.</p></div>
+      <div class="card"><h3><span class="icon">🔄</span>Two-host life cycle</h3><p>Human liver → blood stages → gametocytes → <i>Anopheles</i> midgut → sporozoites → saliva. Each stage is a potential modelling &amp; intervention point.</p></div>
+      <div class="card"><h3><span class="icon">🧪</span>Why AI cares</h3><p>Parasite population structure, gene flow and marker frequencies vary by geography — exactly the high-dimensional, spatiotemporal data where ML outperforms tables.</p></div>
+    </div>
+  </div>
+  <div class="footer"><span class="flag"><i class="g"></i><i class="y"></i><i class="r"></i></span><span>KCCR · KNUST · P-TRANSMIT AI</span><div class="line"></div><span>04 / 15</span></div>
+</section>
+
+<!-- ============ SLIDE 5 · TRANSMISSION DYNAMICS ============ -->
+<section class="slide">
+  <div class="brandbar">
+    <img src="assets/kccr_knust.png" alt="KCCR · KNUST">
+    <div class="divider"></div><span class="t">KCCR · KNUST — Malaria AI Seminar</span>
+    <div class="spacer"></div><span class="tag">Transmission</span>
+  </div>
+  <div class="slide-inner">
+    <div class="kicker">Dynamics</div>
+    <h2>Transmission is a spatiotemporal system</h2>
+    <p class="sub">Weekly case counts are the <b>visible output</b> of a coupled human–parasite–mosquito–environment system. Any serious forecasting model must ingest the drivers below.</p>
+    <div class="pipeline">
+      <div class="stage"><div class="sn">Driver 01</div><b>Environment</b><p>Rainfall &amp; lag, temperature, humidity, vegetation (NDVI), surface water — control breeding-site availability.</p></div>
+      <div class="stage"><div class="sn">Driver 02</div><b>Vector</b><p><i>An. gambiae s.l.</i>, <i>An. funestus</i>, <i>An. coluzzii</i>; biting rates, insecticide resistance, vectorial capacity.</p></div>
+      <div class="stage"><div class="sn">Driver 03</div><b>Parasite</b><p>Gametocyte carriage, genotype diversity, drug-resistant lineages modifying infectiousness.</p></div>
+      <div class="stage"><div class="sn">Driver 04</div><b>Human &amp; system</b><p>ITN usage, mobility, urbanization, reporting artefacts, health-seeking behaviour, holidays.</p></div>
+      <div class="stage" style="border-color:var(--green);background:#f2f9f6;"><div class="sn" style="color:var(--green);">Output</div><b>Observed cases</b><p>Weekly confirmed cases per region/district — the series our models learn to predict.</p></div>
+    </div>
+    <div class="grid g2" style="margin-top:22px;">
+      <div class="card"><h3><span class="icon">🌧</span>Seasonality signatures</h3><p>Southern Ghana: two rainfall peaks → bimodal transmission. Northern Ghana: single wet season → one long peak with high amplitude. Models must capture phase and amplitude by region.</p></div>
+      <div class="card"><h3><span class="icon">⏱</span>Lags are everything</h3><p>Rainfall affects cases weeks later (breeding → larval development → adult emergence → EIP → case). Typical useful lags: 2–8 weeks. This is why autoregressive + environmental feature models win.</p></div>
+    </div>
+  </div>
+  <div class="footer"><span class="flag"><i class="g"></i><i class="y"></i><i class="r"></i></span><span>KCCR · KNUST · P-TRANSMIT AI</span><div class="line"></div><span>05 / 15</span></div>
+</section>
+
+<!-- ============ SLIDE 6 · WHY AI ============ -->
+<section class="slide">
+  <div class="brandbar">
+    <img src="assets/kccr_knust.png" alt="KCCR · KNUST">
+    <div class="divider"></div><span class="t">KCCR · KNUST — Malaria AI Seminar</span>
+    <div class="spacer"></div><span class="tag">Motivation</span>
+  </div>
+  <div class="slide-inner">
+    <div class="kicker">Why AI, why now</div>
+    <h2>Classical tools plateaued — AI meets the gap</h2>
+    <div class="grid g3" style="margin-top:26px;">
+      <div class="card">
+        <h3><span class="icon">📐</span>Classical mechanistic models</h3>
+        <ul>
+          <li>Ross–Macdonald family: elegant, interpretable</li>
+          <li>Need parameters (vectorial capacity, EIR) that are costly &amp; slow to measure</li>
+          <li>Struggle with sparse, irregular, real-world surveillance data</li>
+        </ul>
+      </div>
+      <div class="card" style="border-top:3px solid var(--gold);">
+        <h3><span class="icon">🤖</span>What machine learning adds</h3>
+        <ul>
+          <li>Learns lags &amp; nonlinear thresholds directly from routine data</li>
+          <li>Blends heterogeneous signals: cases, climate, mobility, genomics</li>
+          <li>Scales to all 16 regions simultaneously, updates weekly</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="icon">🧭</span>Decision value</h3>
+        <ul>
+          <li>Pre-position RDTs, drugs, IRS/ITN campaigns before peaks</li>
+          <li>Prioritise districts for vector control &amp; active case search</li>
+          <li>Early-warning signals trigger field investigation workflows</li>
+        </ul>
+      </div>
+    </div>
+    <div class="grid g2" style="margin-top:20px;">
+      <div class="card"><h3><span class="icon">🧠</span>The AI methods that matter here</h3><p>Gradient-boosted trees (XGBoost) and Random Forests for tabular spatiotemporal data; ridge/elastic-net baselines for transparency; LSTMs &amp; transformer time-series models emerging; CNNs on satellite imagery for breeding-site mapping; Bayesian ensembles for uncertainty.</p></div>
+      <div class="card"><h3><span class="icon">⚠</span>AI is an amplifier, not an oracle</h3><p>Models learn <b>associations</b> in the data they are given. Garbage in, garbage out — data quality, honest validation and human review are non-negotiable. This principle is engineered into P-TRANSMIT AI.</p></div>
+    </div>
+  </div>
+  <div class="footer"><span class="flag"><i class="g"></i><i class="y"></i><i class="r"></i></span><span>KCCR · KNUST · P-TRANSMIT AI</span><div class="line"></div><span>06 / 15</span></div>
+</section>
+
+<!-- ============ SLIDE 7 · AI ADOPTION LANDSCAPE ============ -->
+<section class="slide">
+  <div class="brandbar">
+    <img src="assets/kccr_knust.png" alt="KCCR · KNUST">
+    <div class="divider"></div><span class="t">KCCR · KNUST — Malaria AI Seminar</span>
+    <div class="spacer"></div><span class="tag">Literature</span>
+  </div>
+  <div class="slide-inner">
+    <div class="kicker">Adoption of AI in malaria transmission studies</div>
+    <h2>The methods landscape — who uses what</h2>
+    <div class="bars">
+      <div class="bar-row"><b>Gradient boosting / Random Forest</b><div class="track"><div class="fill" style="width:88%"></div></div><span class="val">Dominant</span></div>
+      <div class="bar-row"><b>Bayesian &amp; geospatial models (INLA/SGPS)</b><div class="track"><div class="fill" style="width:76%"></div></div><span class="val">Extensive</span></div>
+      <div class="bar-row alt"><b>Deep learning — LSTM / temporal CNN</b><div class="track"><div class="fill" style="width:54%"></div></div><span class="val">Growing</span></div>
+      <div class="bar-row alt"><b>Satellite imagery CNNs (breeding sites, urban risk)</b><div class="track"><div class="fill" style="width:47%"></div></div><span class="val">Growing</span></div>
+      <div class="bar-row"><b>Hybrid ML + mechanistic (process-guided)</b><div class="track"><div class="fill" style="width:38%"></div></div><span class="val">Emerging</span></div>
+      <div class="bar-row alt"><b>Genomic ML (population structure, resistance signals)</b><div class="track"><div class="fill" style="width:33%"></div></div><span class="val">Emerging</span></div>
+      <div class="bar-row alt"><b>Foundation / LLM-assisted analytics</b><div class="track"><div class="fill" style="width:15%"></div></div><span class="val">Frontier</span></div>
+    </div>
+    <p class="src">Indicative synthesis of the 2015–2025 literature (mapping/forecasting reviews, WHO &amp; GRID-style surveillance reports). Bar length = relative prevalence in studies; exact proportions vary by review.</p>
+    <div class="grid g3" style="margin-top:18px;">
+      <div class="card"><h3><span class="icon">🗺</span>Established use</h3><p>Spatiotemporal risk mapping (Malaria Atlas Project-style), seasonal outbreak forecasting at district level, climate-driven early warning.</p></div>
+      <div class="card"><h3><span class="icon">🚀</span>Accelerating use</h3><p>Real-time dashboards integrated with DHIS2, drone + CNN larval-habitat surveys, mobile phone mobility features, drug-resistance marker trend models.</p></div>
+      <div class="card"><h3><span class="icon">🧱</span>Persistent gaps</h3><p>Few deployable African-built platforms; poor model documentation; rare external validation; limited genomic + case data fusion. <b>P-TRANSMIT targets exactly these gaps.</b></p></div>
+    </div>
+  </div>
+  <div class="footer"><span class="flag"><i class="g"></i><i class="y"></i><i class="r"></i></span><span>KCCR · KNUST · P-TRANSMIT AI</span><div class="line"></div><span>07 / 15</span></div>
+</section>
+
+<!-- ============ SLIDE 8 · DATA FOUNDATIONS ============ -->
+<section class="slide">
+  <div class="brandbar">
+    <img src="assets/kccr_knust.png" alt="KCCR · KNUST">
+    <div class="divider"></div><span class="t">KCCR · KNUST — Malaria AI Seminar</span>
+    <div class="spacer"></div><span class="tag">Data</span>
+  </div>
+  <div class="slide-inner">
+    <div class="kicker">Data foundations</div>
+    <h2>Five data streams, one disciplined pipeline</h2>
+    <div class="grid g3" style="margin-top:26px;">
+      <div class="card"><h3><span class="icon">🏥</span>Surveillance</h3><p>Weekly confirmed cases by region/district (DHIS2-style exports). The <b>target variable</b> for forecasting.</p></div>
+      <div class="card"><h3><span class="icon">🌦</span>Environmental</h3><p>Rainfall, temperature, humidity, NDVI — satellite-derived (CHIRPS, ERA5, MODIS). The <b>leading indicators</b>.</p></div>
+      <div class="card"><h3><span class="icon">🧬</span>Genomic</h3><p>Variant calls, marker tables, sample metadata from KCCR sequencing pipelines. Molecular surveillance layer.</p></div>
+      <div class="card"><h3><span class="icon">💊</span>Resistance</h3><p>Molecular marker frequencies + treatment-outcome studies (SMART-style protocols), never conflated with genomics alone.</p></div>
+      <div class="card"><h3><span class="icon">🗺</span>Spatial</h3><p>geoBoundaries ADM1/ADM2 shapefiles, population rasters (WorldPop) for rate denominators.</p></div>
+      <div class="card" style="background:#f2f9f6;border-color:#bcd9cd;"><h3><span class="icon">✅</span>Pipeline discipline</h3><p>Auto-profiling, missingness reports, fuzzy region matching, explicit column mapping, <b>no silent imputation</b>, synthetic data permanently flagged.</p></div>
+    </div>
+    <div class="card" style="margin-top:20px;">
+      <h3><span class="icon">🧾</span>Feature engineering — the transmission lens</h3>
+      <p>Case lags (1–4 weeks) · rolling means · rainfall &amp; temperature at lags 2–8 weeks · seasonality encodings (week-of-year harmonics) · region identifiers · population-normalised rates. Each feature is documented, versioned and auditable — provenance is a first-class citizen.</p>
+    </div>
+  </div>
+  <div class="footer"><span class="flag"><i class="g"></i><i class="y"></i><i class="r"></i></span><span>KCCR · KNUST · P-TRANSMIT AI</span><div class="line"></div><span>08 / 15</span></div>
+</section>
+
+<!-- ============ SLIDE 9 · PLATFORM OVERVIEW ============ -->
+<section class="slide">
+  <div class="brandbar">
+    <img src="assets/kccr_knust.png" alt="KCCR · KNUST">
+    <div class="divider"></div><span class="t">KCCR · KNUST — Malaria AI Seminar</span>
+    <div class="spacer"></div><span class="tag">Platform</span>
+  </div>
+  <div class="slide-inner">
+    <div class="kicker">P-TRANSMIT AI</div>
+    <h2>One platform, ten integrated modules</h2>
+    <p class="sub">A locally-hosted web platform (FastAPI + React) built for Ghanaian surveillance workflows — <b>every prediction accompanied by provenance, metrics and explicit limitations</b>.</p>
+    <div class="grid g4" style="margin-top:24px;">
+      <div class="card"><h3><span class="icon">📈</span>Dashboard</h3><p>National KPIs, risk map, forecast bars, explainability at a glance.</p></div>
+      <div class="card"><h3><span class="icon">🦟</span>Transmission AI</h3><p>Train &amp; forecast weekly cases at 1/2/4/8-week horizons with held-out metrics.</p></div>
+      <div class="card"><h3><span class="icon">🗺️</span>Spatial Intelligence</h3><p>Interactive choropleth: risk, observed cases, forecast medians.</p></div>
+      <div class="card"><h3><span class="icon">🧬</span>Genomics</h3><p>Marker tables, regional frequencies, validated marker catalogue.</p></div>
+      <div class="card"><h3><span class="icon">💊</span>Resistance</h3><p>SMART-style resistance surveillance scaffolding with strict guardrails.</p></div>
+      <div class="card"><h3><span class="icon">⚠</span>Early Warning</h3><p>Model-generated signals with evidence, severity &amp; review workflow.</p></div>
+      <div class="card"><h3><span class="icon">📊</span>Data Explorer</h3><p>Upload CSV/Excel/JSON, quality profiling, region fuzzy-matching.</p></div>
+      <div class="card"><h3><span class="icon">🧪</span>Model Laboratory</h3><p>Model zoo, seeds, temporal validation, full provenance registry.</p></div>
+      <div class="card"><h3><span class="icon">📑</span>Reports</h3><p>One-click reproducibility-oriented markdown reports.</p></div>
+      <div class="card" style="background:#f2f9f6;border-color:#bcd9cd;"><h3><span class="icon">⚙️</span>Settings &amp; Governance</h3><p>System status, scientific governance charter, audit transparency.</p></div>
+    </div>
+  </div>
+  <div class="footer"><span class="flag"><i class="g"></i><i class="y"></i><i class="r"></i></span><span>KCCR · KNUST · P-TRANSMIT AI</span><div class="line"></div><span>09 / 15</span></div>
+</section>
+
+<!-- ============ SLIDE 10 · TRANSMISSION ENGINE ============ -->
+<section class="slide">
+  <div class="brandbar">
+    <img src="assets/kccr_knust.png" alt="KCCR · KNUST">
+    <div class="divider"></div><span class="t">KCCR · KNUST — Malaria AI Seminar</span>
+    <div class="spacer"></div><span class="tag">Core AI</span>
+  </div>
+  <div class="slide-inner">
+    <div class="kicker">Engine room</div>
+    <h2>Transmission forecasting — how the AI actually works</h2>
+    <div class="pipeline" style="margin-top:28px;">
+      <div class="stage"><div class="sn">Step 1</div><b>Ingest &amp; validate</b><p>Weekly series per region; quality checks; nothing imputed silently.</p></div>
+      <div class="stage"><div class="sn">Step 2</div><b>Build features</b><p>Case lags 1–4, environmental covariates, seasonality harmonics.</p></div>
+      <div class="stage"><div class="sn">Step 3</div><b>Train model zoo</b><p>Random Forest · XGBoost · Ridge — per horizon (+1, +2, +4, +8 wk).</p></div>
+      <div class="stage"><div class="sn">Step 4</div><b>Validate temporally</b><p>Strict chronological split — the model never sees the future.</p></div>
+      <div class="stage" style="border-color:var(--green);background:#f2f9f6;"><div class="sn" style="color:var(--green);">Step 5</div><b>Forecast &amp; explain</b><p>Predictions + intervals + permutation feature importance.</p></div>
+    </div>
+    <div class="grid g3" style="margin-top:24px;">
+      <div class="card"><div class="num">3</div><div class="lbl">Model families</div><p>Trees for nonlinearity, boosting for accuracy, ridge as an honest interpretable baseline.</p></div>
+      <div class="card"><div class="num gold">4</div><div class="lbl">Forecast horizons</div><p>+1 wk ops · +2 wk tactical · +4 wk planning · +8 wk strategic.</p></div>
+      <div class="card"><div class="num red">0</div><div class="lbl">Random leakage tolerated</div><p>Time-series folds walk forward in time; MAE / RMSE / sMAPE reported on held-out weeks only.</p></div>
+    </div>
+    <div class="card" style="margin-top:20px;">
+      <h3><span class="icon">🔍</span>Explainability by default</h3>
+      <p>Permutation importance on held-out data shows <b>which features drove each prediction</b> — e.g. lag-1 cases and recent rainfall typically dominate. The platform states plainly: these are <b>associations, not causal effects</b>.</p>
+    </div>
+  </div>
+  <div class="footer"><span class="flag"><i class="g"></i><i class="y"></i><i class="r"></i></span><span>KCCR · KNUST · P-TRANSMIT AI</span><div class="line"></div><span>10 / 15</span></div>
+</section>
+
+<!-- ============ SLIDE 11 · SPATIAL + EARLY WARNING ============ -->
+<section class="slide">
+  <div class="brandbar">
+    <img src="assets/kccr_knust.png" alt="KCCR · KNUST">
+    <div class="divider"></div><span class="t">KCCR · KNUST — Malaria AI Seminar</span>
+    <div class="spacer"></div><span class="tag">Spatial · Alerts</span>
+  </div>
+  <div class="slide-inner">
+    <div class="kicker">From map to action</div>
+    <h2>Spatial intelligence &amp; early-warning signals</h2>
+    <div class="grid g2" style="margin-top:26px;">
+      <div class="card">
+        <h3><span class="icon">🗺️</span>Interactive risk cartography</h3>
+        <ul>
+          <li>Leaflet choropleth of Ghana's 16 regions (geoBoundaries ADM1, CC-BY 4.0)</li>
+          <li>Three layers: transmission risk category · recent 4-week case mean · forecast median</li>
+          <li>Risk classes derived from each dataset's own historical distribution — honest, dataset-relative</li>
+          <li>Drill-down table: 4-wk mean, total, historical p90, forecast median per region</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="icon">⚠</span>Early warning workflow</h3>
+        <ul>
+          <li>Scan compares recent weeks vs. historical p90 &amp; model forecast trajectory</li>
+          <li>Signals carry severity, evidence JSON, model reference &amp; confidence</li>
+          <li>Human review built in: <b>acknowledge / dismiss</b> — alerts are decision support, never autonomous action</li>
+          <li>Alert types: unusual case elevation · forecast upswing · emerging pattern flags</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card" style="margin-top:20px;">
+      <h3><span class="icon">🛰</span>Phase 3 — environmental layers ahead</h3>
+      <p>Environmental-suitability surfaces (rainfall anomalies, NDVI greening, surface-water indices) and surveillance-coverage layers will join the map, moving the platform from <b>case-conditional</b> to <b>environment-forward</b> prediction.</p>
+    </div>
+  </div>
+  <div class="footer"><span class="flag"><i class="g"></i><i class="y"></i><i class="r"></i></span><span>KCCR · KNUST · P-TRANSMIT AI</span><div class="line"></div><span>11 / 15</span></div>
+</section>
+
+<!-- ============ SLIDE 12 · GENOMICS + RESISTANCE ============ -->
+<section class="slide">
+  <div class="brandbar">
+    <img src="assets/kccr_knust.png" alt="KCCR · KNUST">
+    <div class="divider"></div><span class="t">KCCR · KNUST — Malaria AI Seminar</span>
+    <div class="spacer"></div><span class="tag">Genomics</span>
+  </div>
+  <div class="slide-inner">
+    <div class="kicker">Molecular surveillance</div>
+    <h2>Plasmodium genomics &amp; drug-resistance guardrails</h2>
+    <div class="grid g3" style="margin-top:26px;">
+      <div class="card">
+        <h3><span class="icon">🧬</span>Genomics module</h3>
+        <ul>
+          <li>Descriptive statistics of variant calls by region &amp; sample</li>
+          <li>Top detected markers table with call counts</li>
+          <li>Phase 2: heterozygosity, MOI, PCA/population structure, genetic distance clustering</li>
+          <li>KCCR dataset connector planned under data-access agreement</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="icon">💊</span>Resistance module</h3>
+        <ul>
+          <li>SMART-style surveillance scaffolding: marker frequencies, temporal trends, geographic distribution</li>
+          <li>Validated catalogue: <i>kelch13</i> (artemisinin), <i>pfcrt</i> (chloroquine), <i>pfmdr1</i> (lumefantrine/amodiaquine), <i>pfdhfr/pfdhps</i> (SP), <i>pfhrp2/3</i> (HRP2 deletion)</li>
+          <li>Outcome-data integration where ethically approved</li>
+        </ul>
+      </div>
+      <div class="card" style="border-top:3px solid var(--knust-red);">
+        <h3><span class="icon">🛡</span>The bright line</h3>
+        <p style="margin-bottom:10px;">The platform enforces a strict epistemic rule:</p>
+        <p style="background:#fdf3f4;border-left:3px solid var(--knust-red);padding:10px 12px;border-radius:6px;color:var(--knust-red);font-weight:600;font-size:13px;">A detected genetic marker is NOT phenotypic drug resistance.</p>
+        <p style="margin-top:10px;">Interpretation thresholds are <b>researcher-supplied</b> (WHO / published definitions). The platform never invents them.</p>
+      </div>
+    </div>
+    <div class="card" style="margin-top:20px;">
+      <h3><span class="icon">🤝</span>Where AI meets genomics (roadmap)</h3>
+      <p>Machine learning over genomic features — geographic assignment of parasite populations, marker-frequency trend forecasting, and fusion models joining genomic signals with case forecasts — unlocks true <b>integrated molecular-epidemiological intelligence</b>.</p>
+    </div>
+  </div>
+  <div class="footer"><span class="flag"><i class="g"></i><i class="y"></i><i class="r"></i></span><span>KCCR · KNUST · P-TRANSMIT AI</span><div class="line"></div><span>12 / 15</span></div>
+</section>
+
+<!-- ============ SLIDE 13 · RESPONSIBLE AI ============ -->
+<section class="slide">
+  <div class="brandbar">
+    <img src="assets/kccr_knust.png" alt="KCCR · KNUST">
+    <div class="divider"></div><span class="t">KCCR · KNUST — Malaria AI Seminar</span>
+    <div class="spacer"></div><span class="tag">Governance</span>
+  </div>
+  <div class="slide-inner">
+    <div class="kicker">Responsible AI</div>
+    <h2>Governance is engineered, not appended</h2>
+    <div class="grid g2" style="margin-top:26px;">
+      <div class="card">
+        <h3><span class="icon">🔬</span>Scientific honesty</h3>
+        <ul>
+          <li>Synthetic demonstration data is <b>permanently labelled</b> — never shown as real Ghanaian surveillance</li>
+          <li>Temporal validation only; R² reported for completeness, MAE/RMSE primary</li>
+          <li>Intervals are residual-based, explicitly <i>not</i> calibrated probabilistic bounds</li>
+          <li>Every model stored with dataset, features, seed &amp; software versions</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="icon">🧑‍⚕️</span>Human primacy</h3>
+        <ul>
+          <li>System banner on every screen: predictions are <b>not diagnoses</b> and never solely determine treatment or public-health action</li>
+          <li>Alerts require human acknowledge/dismiss workflow</li>
+          <li>Role-based access; audit logs for logins, dataset ops, training runs, reports</li>
+          <li>No PII upload; data stewardship per institutional agreement</li>
+        </ul>
+      </div>
+    </div>
+    <div class="grid g3" style="margin-top:20px;">
+      <div class="card"><h3><span class="icon">🧾</span>Provenance</h3><p>Full lineage from uploaded file → feature matrix → trained artifact → forecast row.</p></div>
+      <div class="card"><h3><span class="icon">⚖️</span>Equity</h3><p>Region-relative risk framing avoids penalising low-reporting districts; gaps in coverage are reported, not hidden.</p></div>
+      <div class="card"><h3><span class="icon">📖</span>Reproducibility</h3><p>One-click research report regenerates the full analysis trail for peer review.</p></div>
+    </div>
+  </div>
+  <div class="footer"><span class="flag"><i class="g"></i><i class="y"></i><i class="r"></i></span><span>KCCR · KNUST · P-TRANSMIT AI</span><div class="line"></div><span>13 / 15</span></div>
+</section>
+
+<!-- ============ SLIDE 14 · ROADMAP ============ -->
+<section class="slide">
+  <div class="brandbar">
+    <img src="assets/kccr_knust.png" alt="KCCR · KNUST">
+    <div class="divider"></div><span class="t">KCCR · KNUST — Malaria AI Seminar</span>
+    <div class="spacer"></div><span class="tag">Roadmap</span>
+  </div>
+  <div class="slide-inner">
+    <div class="kicker">Where we go next</div>
+    <h2>Deployment roadmap</h2>
+    <div class="phases">
+      <div class="phase">
+        <div class="pn">Phase 1 · Now — ✅ Complete</div>
+        <h3>Foundation &amp; forecasting core</h3>
+        <ul>
+          <li>Data Explorer with quality profiling &amp; region matching</li>
+          <li>Transmission forecasting engine (3 models × 4 horizons)</li>
+          <li>Spatial dashboard &amp; early-warning scan</li>
+          <li>Auth, audit logs, provenance registry, reports</li>
+        </ul>
+      </div>
+      <div class="phase p2">
+        <div class="pn">Phase 2 · Next 3–6 months</div>
+        <h3>Genomics &amp; resistance activation</h3>
+        <ul>
+          <li>KCCR genomic dataset connector (data-access agreement)</li>
+          <li>MOI / heterozygosity / population-structure analytics</li>
+          <li>Resistance marker trend visualisations with researcher-set thresholds</li>
+          <li>Model upgrades: gradient boosting tuning, LSTM evaluation, probabilistic intervals</li>
+        </ul>
+      </div>
+      <div class="phase p3">
+        <div class="pn">Phase 3 · 6–18 months</div>
+        <h3>Environmental fusion &amp; scale</h3>
+        <ul>
+          <li>CHIRPS / ERA5 / NDVI automated ingestion</li>
+          <li>Environmental-suitability &amp; coverage map layers</li>
+          <li>District-level (ADM2) resolution</li>
+          <li>Prospective evaluation with NMCP/DHIS2 partners; district pilot in Ashanti</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card" style="margin-top:22px;">
+      <h3><span class="icon">🎯</span>North star</h3>
+      <p>A nationally trusted, locally hosted AI surveillance companion that shortens the distance between <b>data</b> → <b>signal</b> → <b>field action</b> — built in Ghana, by Ghanaian institutions, for the elimination agenda.</p>
+    </div>
+  </div>
+  <div class="footer"><span class="flag"><i class="g"></i><i class="y"></i><i class="r"></i></span><span>KCCR · KNUST · P-TRANSMIT AI</span><div class="line"></div><span>14 / 15</span></div>
+</section>
+
+<!-- ============ SLIDE 15 · CLOSING ============ -->
+<section class="slide closing">
+  <div class="brandbar">
+    <img src="assets/kccr_knust.png" alt="KCCR · KNUST">
+    <div class="divider"></div><span class="t">KCCR · KNUST — Malaria AI Seminar</span>
+    <div class="spacer"></div><span class="tag">Thank you</span>
+  </div>
+  <div class="slide-inner">
+    <div class="kicker" style="color:var(--gold-soft);">Summary &amp; discussion</div>
+    <h2>AI is now practical infrastructure for malaria intelligence</h2>
+    <p class="sub">The parasite is ancient; our response can be modern. With disciplined data, honest validation and human primacy, machine learning turns routine surveillance into foresight.</p>
+    <div class="grid g3" style="margin-top:26px;">
+      <div class="card"><h3><span class="icon">1️⃣</span>Remember</h3><p>Transmission is spatiotemporal — models must respect time, space and lags. Temporal validation is non-negotiable.</p></div>
+      <div class="card"><h3><span class="icon">2️⃣</span>Remember</h3><p>Markers ≠ resistance; predictions ≠ diagnoses. Guardrails make AI usable in public health.</p></div>
+      <div class="card"><h3><span class="icon">3️⃣</span>Remember</h3><p>Local ownership matters — locally hosted, locally governed, built for Ghana's workflows.</p></div>
+    </div>
+    <div class="card" style="margin-top:24px;">
+      <h3><span class="icon">🙌</span>Acknowledgements &amp; contact</h3>
+      <p style="margin-bottom:8px;">Kumasi Centre for Collaborative Research in Tropical Medicine (KCCR) · Kwame Nkrumah University of Science and Technology (KNUST) · Ghana NMCP &amp; regional health directorates (data partners, Phase 3) · mosquito &amp; parasite imagery courtesy of open-science repositories.</p>
+      <p><b style="color:#eef3f5;">Questions &amp; live demonstration welcome.</b> &nbsp;·&nbsp; Platform: <span style="color:var(--gold-soft);">http://localhost:4173</span></p>
+    </div>
+  </div>
+  <div class="footer"><span class="flag"><i class="g"></i><i class="y"></i><i class="r"></i></span><span>KCCR · KNUST · P-TRANSMIT AI</span><div class="line"></div><span>15 / 15</span></div>
+</section>
+
+</div>
+
+<div class="counter" id="counter">1 / 15</div>
+<div class="hint">← → arrows · Space · Home/End · F fullscreen · Ctrl/Cmd+P → export PDF</div>
+<div class="controls">
+  <button id="prev" title="Previous">←</button>
+  <button id="next" title="Next">→</button>
+</div>
+
+<script>
+  const slides = [...document.querySelectorAll('.slide')];
+  let idx = 0;
+  const counter = document.getElementById('counter');
+  const progress = document.getElementById('progress');
+
+  function show(i){
+    idx = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s,k)=>s.classList.toggle('active', k===idx));
+    counter.textContent = (idx+1) + ' / ' + slides.length;
+    progress.style.width = ((idx+1)/slides.length*100) + '%';
+    location.hash = idx + 1;
+  }
+  document.getElementById('next').onclick = ()=>show(idx+1);
+  document.getElementById('prev').onclick = ()=>show(idx-1);
+
+  addEventListener('keydown', e=>{
+    if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();show(idx+1);}
+    else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();show(idx-1);}
+    else if(e.key==='Home')show(0);
+    else if(e.key==='End')show(slides.length-1);
+    else if(e.key.toLowerCase()==='f'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}
+  });
+
+  // Touch swipe
+  let tx = null;
+  addEventListener('touchstart', e=>tx = e.touches[0].clientX, {passive:true});
+  addEventListener('touchend', e=>{
+    if(tx===null)return;
+    const dx = e.changedTouches[0].clientX - tx;
+    if(Math.abs(dx) > 50) show(idx + (dx < 0 ? 1 : -1));
+    tx = null;
+  }, {passive:true});
+
+  // Click right/left half to navigate (ignore buttons/links)
+  document.getElementById('deck').addEventListener('click', e=>{
+    if(e.target.closest('button,a'))return;
+    show(e.clientX > innerWidth/2 ? idx+1 : idx-1);
+  });
+
+  // Deep-link support (#7)
+  const h = parseInt(location.hash.slice(1));
+  if(!isNaN(h) && h>=1 && h<=slides.length) show(h-1); else show(0);
+</script>
+</body>
+</html>
