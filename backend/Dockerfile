@@ -27,5 +27,6 @@ ENV PYTHONUNBUFFERED=1 \
     GEO_DIR=/app/data/geo \
     MODEL_DIR=/app/models
 
+# Render/Koyeb inject $PORT (Render defaults to 10000); fall back to 8000 locally.
 EXPOSE 8000
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

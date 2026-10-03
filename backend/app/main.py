@@ -4,7 +4,7 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.core.config import get_settings
@@ -52,6 +52,11 @@ def create_app() -> FastAPI:
             "demo_mode": s.demo_mode,
             "disclaimer": s.disclaimer,
         }
+
+    @app.get("/", include_in_schema=False)
+    def root() -> RedirectResponse:
+        """Health-check friendly root: redirect to the built UI when present."""
+        return RedirectResponse(url="/app/" if (Path(__file__).resolve().parents[2] / "frontend" / "dist").exists() else "/api/health")
 
     # Optional: serve the built frontend if present (frontend/dist)
     dist = Path(__file__).resolve().parents[2] / "frontend" / "dist"
