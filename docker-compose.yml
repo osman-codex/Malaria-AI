@@ -23,7 +23,9 @@ services:
       retries: 10
 
   api:
-    build: ./backend
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
       DATABASE_URL: postgresql+psycopg://ptransmit:ptransmit-dev-only@db:5432/ptransmit
       SECRET_KEY: change-me-in-real-deployments

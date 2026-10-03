@@ -1,9 +1,6 @@
-# Build from the REPOSITORY ROOT so both backend/ and data/ are in context:
-#   docker build -f backend/Dockerfile -t ptransmit-api .
-#
-# On Koyeb/Render set:
-#   Dockerfile path: backend/Dockerfile
-#   Build context / working directory: . (repo root)
+# Lives at the REPOSITORY ROOT on purpose: Render / Koyeb / Hugging Face
+# Spaces all default to `Dockerfile` at the root, so no path config is needed.
+#   docker build -t ptransmit-api .
 FROM python:3.12-slim
 
 WORKDIR /app
