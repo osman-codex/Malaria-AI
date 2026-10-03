@@ -57,10 +57,13 @@ def main() -> None:
     gj = json.loads(data)
     for f in gj["features"]:
         g = f["geometry"]
+        # simplify() already returns the full coordinates structure for the
+        # geometry's level - do NOT wrap it in an extra list (that produces
+        # non-spec nesting Leaflet rejects with "Invalid LatLng object").
         if g["type"] == "Polygon":
-            g["coordinates"] = [simplify(g["coordinates"])]
+            g["coordinates"] = simplify(g["coordinates"])
         elif g["type"] == "MultiPolygon":
-            g["coordinates"] = [[simplify(p) for p in g["coordinates"]]]
+            g["coordinates"] = [simplify(p) for p in g["coordinates"]]
     light = GEO_DIR / "ghana_adm1_simplified.geojson"
     light.write_text(json.dumps(gj, separators=(",", ":")), encoding="utf-8")
     print(f"saved {light} ({light.stat().st_size//1024} KB)")
