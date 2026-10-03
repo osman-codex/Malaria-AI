@@ -2,9 +2,9 @@
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.core.config import get_settings
@@ -53,22 +53,35 @@ def create_app() -> FastAPI:
             "disclaimer": s.disclaimer,
         }
 
-    @app.get("/", include_in_schema=False)
-    def root() -> RedirectResponse:
-        """Health-check friendly root: redirect to the built UI when present."""
-        return RedirectResponse(url="/app/" if (Path(__file__).resolve().parents[2] / "frontend" / "dist").exists() else "/api/health")
-
-    # Optional: serve the built frontend if present (frontend/dist)
+    # Serve the built frontend (if present) so ONE link opens everything:
+    # site root = UI, /api/* = API. The bundle references assets as
+    # /assets/* (absolute), so the SPA must be served from the root.
     dist = Path(__file__).resolve().parents[2] / "frontend" / "dist"
+
     if dist.exists():
+        # Legacy /app URL kept working (old README flow).
         app.mount("/app", StaticFiles(directory=str(dist), html=True), name="frontend")
 
-        @app.get("/app/{full_path:path}", include_in_schema=False)
+        @app.get("/", include_in_schema=False)
+        def index() -> FileResponse:
+            return FileResponse(dist / "index.html")
+
+        @app.get("/{full_path:path}", include_in_schema=False)
         def spa(full_path: str):
+            # Never shadow the API: unknown /api paths stay JSON 404s.
+            if full_path == "api" or full_path.startswith("api/"):
+                raise HTTPException(404, "Not Found")
+            if ".." in Path(full_path).parts:
+                raise HTTPException(404, "Not Found")
             target = dist / full_path
             if full_path and target.is_file():
                 return FileResponse(target)
             return FileResponse(dist / "index.html")
+    else:
+        @app.get("/", include_in_schema=False)
+        def root_health() -> dict:
+            # No built UI (e.g. API-only container): health-check friendly root.
+            return health()
 
     return app
 

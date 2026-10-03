@@ -1,0 +1,28 @@
+# Mirrors this repo to the Hugging Face Space on every push to main.
+#
+# SETUP (one time):
+#   1. Create the Space on huggingface.co/new-space (SDK: Docker, name: ptransmit)
+#   2. Replace YOUR_HF_USERNAME below with your Hugging Face username
+#   3. Add a GitHub repo secret HF_TOKEN (Settings -> Secrets and variables ->
+#      Actions -> New repository secret) with a write-access HF access token
+#      from https://huggingface.co/settings/tokens
+#
+# Until step 3 exists this workflow fails on each push - that is expected
+# (a red X you can ignore); it starts working the moment the secret is added.
+name: Sync to Hugging Face Hub
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: huggingface/hub-sync@v0.3.0
+        with:
+          github_repo_id: ${{ github.repository }}
+          huggingface_repo_id: YOUR_HF_USERNAME/ptransmit
+          space_sdk: docker
+          hf_token: ${{ secrets.HF_TOKEN }}

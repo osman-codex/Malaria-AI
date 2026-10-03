@@ -27,6 +27,8 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
+      # Image defaults to 7860 (HF Spaces); compose maps 8000:8000.
+      PORT: "8000"
       DATABASE_URL: postgresql+psycopg://ptransmit:ptransmit-dev-only@db:5432/ptransmit
       SECRET_KEY: change-me-in-real-deployments
       DEMO_MODE: "true"
