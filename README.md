@@ -120,6 +120,35 @@ as descriptive. No resistance interpretation happens without researcher-supplied
 validated definitions. For direct KCCR dataset integration (DB/link), add a connector
 module under `backend/app/services/` once a data-access agreement is in place.
 
+## Hosting: one permanent link (frontend + backend together)
+
+The root `Dockerfile` is multi-stage: it builds the React UI and serves it
+from the site root next to `/api/*`, so **one URL opens the whole platform**
+(no CORS setup, no separate frontend host required).
+
+Recommended free host: **Hugging Face Spaces** (permanent URL, deploys from
+this repo, sleeps after ~2 days idle and wakes on visit):
+
+1. Sign up at huggingface.co → create a Space at huggingface.co/new-space
+   (name `ptransmit`, SDK **Docker**, hardware CPU basic / free).
+2. Create a write-scoped token at huggingface.co/settings/tokens.
+3. GitHub → repo **Settings → Secrets and variables → Actions** → new secret
+   `HF_TOKEN` = that token.
+4. Put your Hugging Face username in
+   `.github/workflows/sync-to-hub.yml` (`huggingface_repo_id: <user>/ptransmit`).
+5. Push to `main` — the action mirrors the repo, HF builds the image, and the
+   platform lives at `https://<user>-ptransmit.hf.space`.
+
+Notes:
+- Vercel (or any static host) can remain a second front door: set env var
+  `VITE_API_BASE = https://<user>-ptransmit.hf.space` at build time.
+- Render alternative: service from repo root, Dockerfile path `Dockerfile`,
+  health check `/api/health` (free instances sleep after 15 min idle).
+- Fully offline/local: `start-ptransmit.bat` → `http://localhost:4173`.
+- Free-tier storage is ephemeral: on restart the clearly-labelled synthetic
+  demo data re-seeds automatically; trained models can be re-trained in the
+  Model Laboratory.
+
 ## Tests
 
 ```bash
