@@ -1,0 +1,17 @@
+.aider*
+.freebuff/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+*.db
+*.sqlite3
+backend/data/uploads/
+backend/data/db/
+data/uploads/
+models/*.joblib
+node_modules/
+frontend/dist/
+.pytest_cache/
+.DS_Store

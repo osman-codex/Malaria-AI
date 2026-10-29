@@ -1,0 +1,21 @@
+# Keep the Docker build context small and the image clean
+.git
+**/.git
+**/node_modules
+frontend/dist
+frontend/presentation
+frontend/tsconfig.tsbuildinfo
+backend/data
+data/uploads
+data/demonstration
+models
+docs
+*.db
+*.py[cod]
+**/__pycache__
+.venv
+venv
+.env
+.aider*
+.freebuff
+.pytest_cache

@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>P-TRANSMIT AI — AI Model Manual &amp; Technical Overview</title>
+<style>
+  @page { size: A4; margin: 15mm 14mm 16mm 14mm; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    font-size: 9.8pt; line-height: 1.55; color: #22303a;
+    background: #fff;
+  }
+  h1 { font-size: 21pt; margin: 0 0 6px; color: #0b4a38; line-height: 1.2; }
+  h2 { font-size: 15pt; color: #0b6e4f; margin: 18px 0 8px; border-bottom: 2px solid #0b6e4f; padding-bottom: 4px; }
+  h3 { font-size: 11.5pt; color: #0b4a38; margin: 14px 0 6px; }
+  h4 { font-size: 10.2pt; color: #33414c; margin: 10px 0 4px; }
+  p { margin: 6px 0; }
+  ul, ol { margin: 6px 0 6px 20px; padding: 0; }
+  li { margin: 3px 0; }
+  code { font-family: Consolas, "Courier New", monospace; background: #eef2f5; padding: 0 4px; border-radius: 3px; font-size: 9pt; }
+  strong { color: #14323f; }
+
+  .part { page-break-before: always; }
+  .avoid { break-inside: avoid; }
+
+  .cover { page-break-after: always; }
+  .cover-band { background: #0b6e4f; color: #fff; padding: 26px 28px; border-radius: 6px; }
+  .cover-band .kicker { font-size: 10pt; letter-spacing: 2.5px; text-transform: uppercase; opacity: .85; margin-bottom: 8px; }
+  .cover-band h1 { color: #fff; font-size: 26pt; }
+  .cover-band .sub { font-size: 12.5pt; opacity: .95; margin-top: 6px; }
+  .cover-meta { width: 100%; border-collapse: collapse; margin-top: 22px; font-size: 10pt; }
+  .cover-meta td { border-bottom: 1px solid #e0e6ea; padding: 7px 8px; }
+  .cover-meta td:first-child { color: #5b6b76; width: 34%; }
+  .disclaimer { border: 1.5px solid #b3202a; background: #fdf3f3; color: #7a1318; padding: 12px 14px; border-radius: 6px; margin-top: 24px; font-size: 9.5pt; }
+  .disclaimer strong { color: #b3202a; }
+  .toc { columns: 2; column-gap: 28px; font-size: 10pt; margin-top: 8px; }
+  .toc div { margin: 5px 0; break-inside: avoid; }
+  .toc span { color: #0b6e4f; font-weight: 600; margin-right: 6px; }
+
+  .flow { display: flex; flex-wrap: wrap; gap: 5px; margin: 10px 0 14px; }
+  .flow div { flex: 1 1 30%; background: #eef6f3; border: 1px solid #bcd9cf; border-left: 4px solid #0b6e4f; padding: 6px 8px; font-size: 8.6pt; border-radius: 3px; }
+
+  .layer { border: 1px solid #dde5ea; border-radius: 5px; padding: 10px 13px; margin: 11px 0; break-inside: avoid; background: #fcfefd; }
+  .layer h3 { margin: 0 0 4px; color: #0b6e4f; font-size: 11.5pt; }
+  .layer .tag { display: inline-block; background: #0b6e4f; color: #fff; font-size: 8pt; border-radius: 10px; padding: 1px 9px; margin-right: 7px; vertical-align: 2px; }
+  .layer .means { font-size: 9.2pt; background: #f2f7f9; border-left: 3px solid #d4a017; padding: 6px 10px; margin-top: 7px; }
+
+  table.grid { width: 100%; border-collapse: collapse; font-size: 8.9pt; margin: 8px 0 12px; }
+  table.grid th { background: #0b6e4f; color: #fff; text-align: left; padding: 6px 8px; font-weight: 600; }
+  table.grid td { border-bottom: 1px solid #e3e9ee; padding: 5px 8px; vertical-align: top; }
+  table.grid tr:nth-child(even) td { background: #f7fafb; }
+
+  .step { display: flex; gap: 10px; margin: 9px 0; break-inside: avoid; }
+  .step .num { flex: 0 0 24px; height: 24px; border-radius: 12px; background: #0b6e4f; color: #fff; font-weight: 700; font-size: 10.5pt; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+  .step .body { flex: 1; }
+  .step .body p { margin: 2px 0; }
+
+  .note { background: #fff8e6; border-left: 4px solid #d4a017; padding: 8px 12px; margin: 10px 0; font-size: 9.3pt; break-inside: avoid; }
+  .warn { background: #fdf3f3; border-left: 4px solid #b3202a; padding: 8px 12px; margin: 10px 0; font-size: 9.3pt; break-inside: avoid; }
+  .ok { background: #f0f7f2; border-left: 4px solid #0b6e4f; padding: 8px 12px; margin: 10px 0; font-size: 9.3pt; break-inside: avoid; }
+
+  .foot { margin-top: 18px; border-top: 1px solid #dde5ea; padding-top: 6px; font-size: 8.2pt; color: #7a8791; }
+  .two { display: flex; gap: 14px; }
+  .two > div { flex: 1; }
+</style>
+</head>
+<body>
+
+<!-- ================= COVER ================= -->
+<section class="cover">
+  <div class="cover-band">
+    <div class="kicker">Ghana Plasmodium Intelligence Platform</div>
+    <h1>P-TRANSMIT AI — The AI Model</h1>
+    <div class="sub">Operating Manual &amp; Technical Overview<br/>What each layer means and how to run it</div>
+  </div>
+
+  <table class="cover-meta">
+    <tr><td>Document</td><td>AI Model Manual (Manual + Overall Information)</td></tr>
+    <tr><td>Platform version</td><td>0.1.0 — Phase-1 MVP</td></tr>
+    <tr><td>Date</td><td>3 October 2026</td></tr>
+    <tr><td>Model family</td><td>Supervised tabular regression: Random Forest · XGBoost · Ridge</td></tr>
+    <tr><td>Target</td><td>Weekly confirmed malaria cases per region (Ghana, 16 regions)</td></tr>
+    <tr><td>Forecast horizons</td><td>1, 2, 4 and 8 weeks ahead</td></tr>
+    <tr><td>Validation</td><td>Strictly chronological (temporal) hold-out — never random splits</td></tr>
+    <tr><td>Code reference</td><td><code>backend/app/ml/transmission.py</code>, <code>backend/app/services/alerts.py</code></td></tr>
+    <tr><td>Licence</td><td>MIT (code) · geoBoundaries ADM1 boundaries CC-BY 4.0</td></tr>
+  </table>
+
+  <div class="disclaimer">
+    <strong>DISCLAIMER — read first.</strong> P-TRANSMIT AI is a research and surveillance
+    decision-support system. Model predictions are <strong>not diagnoses</strong> and must not
+    independently determine patient treatment or public-health action. All outputs require
+    review by qualified public-health researchers and officers. Demonstration data are
+    synthetic and always labelled as such.
+  </div>
+
+  <h3 style="margin-top:26px;">Contents</h3>
+  <div class="toc">
+    <div><span>Part I</span> Overall information about the system</div>
+    <div><span>Part II</span> The AI model — every layer explained</div>
+    <div><span>Part III</span> Operating manual — step by step</div>
+    <div><span>Part IV</span> Interpreting outputs &amp; limitations</div>
+    <div><span>App.</span> Metrics, artifact anatomy &amp; glossary</div>
+  </div>
+</section>
+
+<!-- ================= PART I ================= -->
+<section class="part">
+  <h2>Part I — Overall information</h2>
+
+  <h3>What P-TRANSMIT AI is</h3>
+  <p>
+    P-TRANSMIT AI is an open, locally-hostable decision-support platform for
+    <em>Plasmodium falciparum</em> transmission, genomic epidemiology and antimalarial drug
+    resistance surveillance in Ghana. It ingests weekly surveillance data (cases plus
+    environmental covariates), trains and compares supervised forecasting models, produces
+    per-region forecasts with uncertainty ranges, explains what drove each prediction, and
+    raises relative early-warning signals for human review.
+  </p>
+
+  <table class="grid">
+    <tr><th style="width:24%">Module</th><th style="width:14%">Status</th><th>What it does</th></tr>
+    <tr><td>Dashboard</td><td>Live</td><td>National KPIs, choropleth map, national forecast, per-region explanations, alerts.</td></tr>
+    <tr><td>Transmission AI</td><td>Live</td><td>Trains models, shows held-out observed-vs-predicted curves and metrics per horizon.</td></tr>
+    <tr><td>Spatial Intelligence</td><td>Live</td><td>Interactive map of Ghana's 16 regions with risk / observed / forecast layers.</td></tr>
+    <tr><td>Forecasting</td><td>Live</td><td>1/2/4/8-week forecasts with residual-based uncertainty intervals and stated assumptions.</td></tr>
+    <tr><td>Explainable AI</td><td>Live</td><td>SHAP (when installed) or perturbation-based per-region contributions — model behaviour, not causality.</td></tr>
+    <tr><td>Early-warning alerts</td><td>Live</td><td>Level / trend / forecast signals relative to the dataset's own history; human review required.</td></tr>
+    <tr><td>Data Explorer</td><td>Live</td><td>CSV/TSV/XLSX/JSON upload, data-quality report, column mapping, Ghana region fuzzy-matching.</td></tr>
+    <tr><td>Model Laboratory</td><td>Live</td><td>Train/compare/manage models with full reproducibility provenance.</td></tr>
+    <tr><td>Reports</td><td>Live</td><td>Markdown research report including a limitations section.</td></tr>
+    <tr><td>Plasmodium Genomics / Resistance</td><td>Scaffold</td><td>Marker catalogue + descriptive statistics; awaits validated data (no simulated results).</td></tr>
+  </table>
+
+  <h3>Scientific governance principles (enforced in code)</h3>
+  <ul>
+    <li><strong>Synthetic data are always labelled</strong> and never mixed with real data.</li>
+    <li><strong>No invented thresholds.</strong> Risk categories are relative to the loaded dataset's own history; resistance interpretation requires researcher-supplied definitions.</li>
+    <li><strong>Strictly temporal validation.</strong> Time-series rows are never shuffled; train weeks always precede test weeks.</li>
+    <li><strong>MAE / RMSE are primary metrics</strong> for case counts; R² is reported for completeness only.</li>
+    <li><strong>Explanations describe model behaviour, not causal effects.</strong></li>
+    <li><strong>Alerts are research signals, not confirmed outbreaks</strong>; they require human and public-health review.</li>
+    <li><strong>Genetic marker ≠ phenotypic drug resistance.</strong></li>
+    <li><strong>Audit logs</strong> record logins, dataset operations, training runs and report generation.</li>
+  </ul>
+
+  <h3>Technology stack</h3>
+  <table class="grid">
+    <tr><th style="width:26%">Layer</th><th>Technology</th></tr>
+    <tr><td>Backend / API</td><td>Python · FastAPI · SQLAlchemy (SQLite default, PostgreSQL optional) · scikit-learn · XGBoost · pandas / numpy</td></tr>
+    <tr><td>Frontend</td><td>React · TypeScript · Vite · Recharts (charts) · Leaflet (map)</td></tr>
+    <tr><td>Geography</td><td>geoBoundaries gbOpen GHA ADM1 (16 regions), CC-BY 4.0, simplified for the web map</td></tr>
+    <tr><td>Deployment</td><td>Local (one-click .bat) or one Docker image serving UI + API together</td></tr>
+  </table>
+</section>
+
+<!-- ================= PART II ================= -->
+<section class="part">
+  <h2>Part II — The AI model: what each layer means</h2>
+  <p>
+    The "AI model" is not a single neural network — it is a <strong>pipeline of ten layers</strong>.
+    Each layer has one job; together they turn raw weekly surveillance rows into forecasts,
+    explanations and early-warning signals.
+  </p>
+
+  <div class="flow">
+    <div><strong>1 · Data</strong> — standardised weekly rows</div>
+    <div><strong>2 · Features</strong> — lags, environment, season, region</div>
+    <div><strong>3 · Models</strong> — RF · XGBoost · Ridge</div>
+    <div><strong>4 · Validation</strong> — chronological split</div>
+    <div><strong>5 · Metrics</strong> — MAE / RMSE primary</div>
+    <div><strong>6 · Forecast</strong> — next weeks per region</div>
+    <div><strong>7 · Uncertainty</strong> — residual-based intervals</div>
+    <div><strong>8 · Risk</strong> — relative categories</div>
+    <div><strong>9 · Explainability</strong> — SHAP / perturbation</div>
+    <div><strong>10 · Alerts</strong> — relative early-warning rules</div>
+  </div>
+
+  <div class="layer">
+    <h3><span class="tag">Layer 1</span>Data layer — the raw material</h3>
+    <p><strong>What it is:</strong> a weekly surveillance table, one row per region per epi-week.</p>
+    <ul>
+      <li>Required columns: <code>region</code>, <code>week_start_date</code>, <code>malaria_cases</code> (synonyms auto-detected, e.g. <code>mal_cases</code>, <code>cases</code>, <code>date</code>).</li>
+      <li>Optional covariates: <code>rainfall_mm</code>, <code>temperature_mean_c</code>, <code>humidity_pct</code>, <code>ndvi</code>, <code>population_illustrative</code>, <code>suspected_cases</code>, <code>test_positivity_rate</code>.</li>
+      <li>Ingestion profiles data quality, suggests column mappings and fuzzy-matches names to Ghana's 16 canonical regions. <strong>Nothing is imputed silently</strong> — missing values are reported.</li>
+    </ul>
+    <div class="means"><strong>What it means:</strong> garbage in → garbage out. The Data Explorer's quality report is your first checkpoint before training.</div>
+  </div>
+
+  <div class="layer">
+    <h3><span class="tag">Layer 2</span>Feature layer — what the model actually sees</h3>
+    <p>For every region-week, the engine (<code>build_supervised</code>) constructs:</p>
+    <table class="grid">
+      <tr><th style="width:30%">Feature group</th><th style="width:32%">Columns</th><th>Meaning</th></tr>
+      <tr><td>Case history (lags)</td><td><code>cases_lag1…cases_lag4</code></td><td>Confirmed cases in each of the previous 1–4 weeks (per region). The dominant predictor: recent momentum.</td></tr>
+      <tr><td>Environment (current + lag)</td><td><code>rainfall_mm</code>, <code>temperature_mean_c</code>, <code>humidity_pct</code>, <code>ndvi</code> (+ <code>_lag1</code> of each)</td><td>Weather/vegetation conditions now and one week ago — known correlates of transmission.</td></tr>
+      <tr><td>Seasonality</td><td><code>sin_week</code>, <code>cos_week</code></td><td>Cyclic encoding of the ISO week-of-year (period 52) so the model can learn wet/dry-season patterns without a discontinuity at year boundaries.</td></tr>
+      <tr><td>Region fixed effects</td><td><code>region_…</code> dummies (one per region)</td><td>One-hot indicator for the row's region — lets a <em>single global model</em> capture each region's baseline level.</td></tr>
+      <tr><td>Population (optional)</td><td><code>population_illustrative</code></td><td>Denominator/weight column when present.</td></tr>
+      <tr><td>Target</td><td><code>target_lead</code> = cases at week <em>t+h</em></td><td>For horizon <em>h</em>, the label is the case count <em>h</em> weeks in the future (a lead shift, <code>shift(-h)</code>).</td></tr>
+    </table>
+    <div class="means"><strong>What it means:</strong> the model predicts the future from (a) recent case history, (b) current environment, (c) time of year, and (d) which region it is. Rows with missing lag/lead values are dropped — that is why the first weeks of each region are not used.</div>
+  </div>
+
+  <div class="layer">
+    <h3><span class="tag">Layer 3</span>Model layer — three competing algorithms</h3>
+    <p>Each horizon trains <strong>three</strong> candidate models (<code>DEFAULT_MODELS</code>); the platform keeps the best one:</p>
+    <table class="grid">
+      <tr><th style="width:17%">Model</th><th style="width:30%">Hyper-parameters (fixed in v0.1)</th><th>Plain-language explanation</th></tr>
+      <tr>
+        <td><strong>Ridge</strong></td>
+        <td><code>StandardScaler → Ridge(α = 1.0)</code></td>
+        <td>A regularised <em>linear</em> model. Learns one weight per feature: stable, fast, fully interpretable, but only captures linear relationships. Serves as the honest baseline.</td>
+      </tr>
+      <tr>
+        <td><strong>Random Forest</strong></td>
+        <td>250 trees, <code>min_samples_leaf = 2</code>, seed fixed</td>
+        <td>Averaged ensemble of decision trees ("bagging"). Captures non-linearity and interactions (e.g. rainfall × season × region), robust to outliers, rarely overfits hard. Slower and less interpretable than Ridge.</td>
+      </tr>
+      <tr>
+        <td><strong>XGBoost</strong></td>
+        <td>500 trees, learning-rate 0.05, depth 4, subsample 0.9, colsample 0.9, λ 1.0</td>
+        <td>Gradient <em>boosting</em>: trees added sequentially, each correcting the previous one's errors. Usually the strongest on tabular data; the most sensitive to settings and to data quality.</td>
+      </tr>
+    </table>
+    <ul>
+      <li>Training happens <strong>once per horizon</strong> (1, 2, 4, 8 weeks) — so up to 4 × 3 = 12 fits per run.</li>
+      <li>The winner per horizon = <strong>lowest test-set MAE</strong>. It is persisted as a joblib artifact, e.g. <code>transmission_xgboost_h4_ds1.joblib</code>, together with its full provenance (feature list, train/test weeks, seed, software versions, timestamp).</li>
+      <li>A fixed <strong>random seed</strong> (default 42, user-settable) makes runs reproducible.</li>
+    </ul>
+    <div class="means"><strong>What it means:</strong> you don't pick the algorithm — you offer candidates and the platform picks the most accurate on held-out future weeks, per horizon, and records exactly how.</div>
+  </div>
+
+  <div class="layer">
+    <h3><span class="tag">Layer 4</span>Validation layer — honest evaluation</h3>
+    <ul>
+      <li><strong>Chronological split on unique weeks</strong> (<code>temporal_split</code>): the earliest <strong>80%</strong> of weeks (configurable "train fraction") form the training set; the latest 20% form the test set.</li>
+      <li>Train-week and test-week sets are <em>disjoint</em> and <code>max(train week) &lt; min(test week)</code> — verified by the automated test suite. No future information can leak backwards.</li>
+      <li>Lags are computed within each region's own history before the split, so no row borrows information from a test week.</li>
+    </ul>
+    <div class="means"><strong>What it means:</strong> reported metrics come from genuinely unseen future weeks — the score approximates how the model would have behaved in production, not how well it memorised the past.</div>
+  </div>
+
+  <div class="layer">
+    <h3><span class="tag">Layer 5</span>Metrics layer — how good is good?</h3>
+    <table class="grid">
+      <tr><th style="width:16%">Metric</th><th style="width:30%">Formula / rule</th><th>How to read it</th></tr>
+      <tr><td><strong>MAE</strong> (primary)</td><td>mean |predicted − observed|</td><td>"Typical error in cases per week." Compare it to your region's case scale: MAE 8 on counts of ~100 ≈ 8% typical miss.</td></tr>
+      <tr><td><strong>RMSE</strong> (primary)</td><td>√mean(error²)</td><td>Like MAE but punishes large misses heavily — a big gap between RMSE and MAE signals occasional bad predictions.</td></tr>
+      <tr><td>MAPE</td><td>mean |err/observed| on non-zero weeks</td><td>Percentage error; unstable when counts are near zero, hence excluded on zero weeks.</td></tr>
+      <tr><td>sMAPE</td><td>symmetric % variant</td><td>Bounded percentage variant for comparison across regions.</td></tr>
+      <tr><td>R²</td><td>coefficient of determination</td><td>Reported <em>for completeness only</em>; low R² is normal and not alarming for noisy count data.</td></tr>
+      <tr><td>residual_std</td><td>std of test residuals</td><td>Feeds the uncertainty intervals (Layer 7).</td></tr>
+      <tr><td>n_test, fit_seconds</td><td>—</td><td>How many held-out rows were scored; how long fitting took.</td></tr>
+    </table>
+    <div class="means"><strong>What it means:</strong> judge models by <strong>MAE/RMSE in case units</strong>, per horizon — longer horizons (8 weeks) are inherently harder; expect their errors to be larger.</div>
+  </div>
+
+  <div class="layer">
+    <h3><span class="tag">Layer 6</span>Forecast layer — producing next weeks' numbers</h3>
+    <ul>
+      <li>At the <strong>last observed week</strong>, the engine builds one feature row per region (lags from actual history, seasonality from the calendar, region dummy = 1).</li>
+      <li>Each persisted best model predicts the case count <em>h</em> weeks ahead (h ∈ {1, 2, 4, 8}).</li>
+      <li><strong>Environmental persistence assumption:</strong> future weather/vegetation are held at their <em>last observed value</em>. The API states this in every forecast response (<code>assumptions</code> field) — the model does not know next month's rainfall.</li>
+      <li>Predictions are clipped at ≥ 0 (case counts cannot be negative).</li>
+    </ul>
+    <div class="means"><strong>What it means:</strong> a forecast is "the best guess given conditions stay roughly as they are" — read it alongside the stated assumptions, not as a certainty.</div>
+  </div>
+
+  <div class="layer">
+    <h3><span class="tag">Layer 7</span>Uncertainty layer — the error bars</h3>
+    <ul>
+      <li>Each forecast carries <code>interval_low</code> / <code>interval_high</code> = prediction <strong>± 1.96 × residual_std</strong> (low clipped at 0).</li>
+      <li><code>residual_std</code> is the standard deviation of the model's errors on the held-out test weeks — i.e. "how wrong this model has actually been on unseen data."</li>
+      <li>Method string returned with every forecast: <em>"residual-based Gaussian approximation (not calibrated probabilistic intervals)."</em></li>
+    </ul>
+    <div class="means"><strong>What it means:</strong> the interval shows the model's typical error range — it is <em>not</em> a 95% probability guarantee, and it will be wide where the model is shaky. Treat values near the upper bound as "worth watching."</div>
+  </div>
+
+  <div class="layer">
+    <h3><span class="tag">Layer 8</span>Risk layer — relative categories</h3>
+    <table class="grid">
+      <tr><th style="width:34%">Context</th><th>Rule (computed from the loaded dataset itself)</th></tr>
+      <tr><td>Forecast rows</td><td>predicted ≥ historical <strong>p90</strong> → <em>very high</em> · ≥ <strong>p75</strong> → <em>high</em> · ≥ <strong>p50</strong> → <em>moderate</em> · else <em>low</em> (quantiles of all weekly cases in the dataset).</td></tr>
+      <tr><td>Map "risk" layer</td><td>Per region, relative to <em>that region's own</em> historical p90: ≥ p90 → very high · ≥ 0.9·p90 → high · ≥ 0.75·p90 → moderate · else low.</td></tr>
+    </table>
+    <div class="means"><strong>What it means:</strong> categories answer "<em>unusual for this data?</em>" — they are <strong>not</strong> national clinical thresholds. A "very high" in a chronically low region may still be a small number; always read it with the case values next to it.</div>
+  </div>
+
+  <div class="layer">
+    <h3><span class="tag">Layer 9</span>Explainability layer — "why this number?"</h3>
+    <ul>
+      <li><strong>Global importance</strong>: permutation importance on the held-out weeks (5 repeats, scored by MAE change) — which features the model relies on overall; shown as top-12.</li>
+      <li><strong>Per-region explanations</strong> (Dashboard "Why?" panel): the engine perturbs each non-region feature (replaces it with its training median) and records how the prediction moves; where <code>shap</code> is installed, tree models use <strong>SHAP TreeExplainer</strong> instead. Top 8 contributions per region are shown as signed bars.</li>
+      <li>Positive contribution = pushed the prediction <em>up</em>; negative = pulled it <em>down</em>.</li>
+      <li>Method text always ends with: <em>"model behaviour, not causal effects."</em></li>
+    </ul>
+    <div class="means"><strong>What it means:</strong> explanations tell you what the model leaned on — useful for sanity-checking ("is it reacting to rainfall or to last week's spike?") — but they are <strong>not</strong> evidence that feature <em>caused</em> transmission changes.</div>
+  </div>
+
+  <div class="layer">
+    <h3><span class="tag">Layer 10</span>Alert layer — relative early-warning rules</h3>
+    <p>Three deterministic rules scan every region (minimum 30 weeks of history) — see <code>alerts.py</code>:</p>
+    <table class="grid">
+      <tr><th style="width:16%">Rule</th><th style="width:12%">Severity</th><th>Trigger</th></tr>
+      <tr><td><strong>Level</strong></td><td>warning</td><td>Mean of the last 4 observed weeks &gt; that region's historical <strong>90th percentile</strong>.</td></tr>
+      <tr><td><strong>Trend</strong></td><td>warning</td><td>Least-squares slope of the last 8 weeks &gt; the 90th percentile of all historical 8-week slopes for that region (and threshold &gt; 0).</td></tr>
+      <tr><td><strong>Forecast</strong></td><td>info</td><td>Median model prediction for weeks 1–4 &gt; the region's historical p90.</td></tr>
+    </table>
+    <ul>
+      <li>Every alert stores its <strong>evidence</strong> (the numbers that fired it), the model reference and a plain-language explanation.</li>
+      <li>Duplicates are suppressed: an open alert of the same type+region is not re-created on the next scan.</li>
+      <li>Workflow: <em>open → acknowledged / dismissed</em> — a person always decides.</li>
+    </ul>
+    <div class="means"><strong>What it means:</strong> alerts are "unusual relative to this dataset" flags for triage — never confirmation of an outbreak, and never a treatment directive.</div>
+  </div>
+</section>
+
+<!-- ================= PART III ================= -->
+<section class="part">
+  <h2>Part III — Operating the model (step by step)</h2>
+
+  <h3>A. Access the platform</h3>
+  <div class="step"><div class="num">1</div><div class="body">
+    <p><strong>Local:</strong> double-click <code>start-ptransmit.bat</code> → open <code>http://localhost:4173</code> (both server windows must stay open; close them to stop).</p>
+    <p><strong>Hosted:</strong> open your permanent deployment URL (e.g. the Render link) — the same UI and API are served from one address.</p>
+  </div></div>
+  <div class="step"><div class="num">2</div><div class="body">
+    <p>Sign in: click <strong>⚡ Enter live demo</strong> (read-only researcher, no account), or use <code>demo / demo1234</code> or <code>admin / ptransmit-admin</code>. Change real credentials before any real deployment.</p>
+  </div></div>
+
+  <h3>B. Train the models (Model Laboratory)</h3>
+  <div class="step"><div class="num">1</div><div class="body"><p>Open <strong>Data Explorer</strong> and confirm your dataset is listed (the clearly-labelled DEMO dataset loads automatically in demo mode).</p></div></div>
+  <div class="step"><div class="num">2</div><div class="body"><p>Open <strong>Model Laboratory</strong> and set:</p>
+    <ul>
+      <li><strong>Dataset</strong> — the surveillance table to learn from.</li>
+      <li><strong>Random seed</strong> (default 42) — same seed ⇒ same results.</li>
+      <li><strong>Train fraction (temporal)</strong> (default 0.8) — earliest 80% of weeks train, latest 20% test.</li>
+      <li><strong>Models</strong> — tick Random Forest, XGBoost, Ridge (all three by default).</li>
+      <li><strong>Horizons (weeks)</strong> — 1 / 2 / 4 / 8 (all by default).</li>
+    </ul>
+  </div></div>
+  <div class="step"><div class="num">3</div><div class="body"><p>Press <strong>Train</strong> and wait (~1 minute on a laptop for the demo dataset; longer on free-host CPUs). Training continues per horizon even if one model errors.</p></div></div>
+  <div class="step"><div class="num">4</div><div class="body"><p>Read the results table: for each horizon you get every candidate's MAE/RMSE/R², the <strong>best model</strong> (lowest test MAE) and its saved artifact path. Expand a row's <strong>Provenance</strong> for dataset, features, seed, versions and timestamp.</p></div></div>
+
+  <div class="note"><strong>Training has run once already?</strong> The <strong>Transmission AI</strong> page has the same train button plus the region/model selectors for inspecting held-out curves — useful for a second opinion before trusting a horizon.</div>
+
+  <h3>C. View forecasts</h3>
+  <div class="step"><div class="num">1</div><div class="body"><p><strong>Dashboard:</strong> KPI cards (last week, recent 4-week national cases, <em>national forecast next week</em>, regions at elevated risk) and the map. Use the <strong>Map layer</strong> selector: <em>Transmission risk category</em> / <em>Recent 4-week case mean</em> / <em>Forecast median (≤4 weeks)</em>. Hover any region for detail.</p></div></div>
+  <div class="step"><div class="num">2</div><div class="body"><p><strong>Spatial Intelligence:</strong> the same map with a snapshot table of all regions (observed, historical p90, forecast, risk).</p></div></div>
+  <div class="step"><div class="num">3</div><div class="body"><p><strong>Transmission AI:</strong> per region and per model, held-out observed-vs-predicted curves and the metric block — check these before quoting any forecast.</p></div></div>
+
+  <h3>D. Read the explanations</h3>
+  <div class="step"><div class="num">1</div><div class="body"><p>Dashboard → <strong>"Why? Top contributors for ⟨region⟩"</strong>: signed bars of the top features behind that region's current prediction, with the method note above them. Ask: <em>is the model leaning on recent cases, rainfall, or season?</em></p></div></div>
+
+  <h3>E. Run and triage alerts</h3>
+  <div class="step"><div class="num">1</div><div class="body"><p>Open <strong>Alerts</strong> → <strong>Run alert scan</strong>. New signals appear with severity, region, evidence numbers and the explanation text.</p></div></div>
+  <div class="step"><div class="num">2</div><div class="body"><p>Review each signal against your operational knowledge, then <strong>Acknowledge</strong> (keeping it on the radar) or <strong>Dismiss</strong> (not actionable). Already-open signals of the same type+region are not duplicated on re-scan.</p></div></div>
+
+  <h3>F. Load real data &amp; retrain</h3>
+  <div class="step"><div class="num">1</div><div class="body"><p><strong>Data Explorer</strong> → choose record type <em>surveillance</em> → upload CSV/XLSX/JSON with <code>region</code>, <code>week_start_date</code>, <code>malaria_cases</code> (synonyms auto-detected). Review the data-quality report and column mapping; confirm region matches.</p></div></div>
+  <div class="step"><div class="num">2</div><div class="body"><p><strong>Model Laboratory</strong> → select the <em>new</em> dataset → Train. Dashboard, forecasts, explanations and alerts now default to the latest dataset.</p></div></div>
+  <div class="step"><div class="num">3</div><div class="body"><p>Regenerate a <strong>Report</strong> for the record (Markdown, includes limitations), and check <strong>Settings</strong> for demo-mode status and the governance checklist.</p></div></div>
+
+  <div class="warn"><strong>Housekeeping on free/hosted tiers:</strong> storage is ephemeral — after a restart the labelled demo data re-seeds automatically, but <em>trained model files and uploaded accounts do not survive</em>. Re-train via Model Laboratory after every redeploy. Locally, artifacts live in <code>models/</code> and persist across restarts.</div>
+</section>
+
+<!-- ================= PART IV ================= -->
+<section class="part">
+  <h2>Part IV — Interpreting outputs &amp; limitations</h2>
+
+  <table class="grid">
+    <tr><th style="width:30%">You see</th><th>Read it as</th><th style="width:30%">Do NOT read it as</th></tr>
+    <tr><td>MAE = 8 (h=1)</td><td>On unseen future weeks the typical miss was ±8 cases/week.</td><td>"8% error" or a guarantee for any single week.</td></tr>
+    <tr><td>RMSE ≫ MAE</td><td>Occasional large misses — inspect the observed-vs-predicted curve for spike weeks.</td><td>A broken model (spikes are inherently hard).</td></tr>
+    <tr><td>R² low or negative</td><td>Common for noisy count series; MAE/RMSE are primary.</td><td>The model is useless — compare against the baseline.</td></tr>
+    <tr><td>Interval [120 – 340]</td><td>Typical model error band from held-out residuals.</td><td>A calibrated 95% probability range.</td></tr>
+    <tr><td>Risk: "very high"</td><td>Prediction is ≥ the dataset's own historical p90.</td><td>A national emergency threshold.</td></tr>
+    <tr><td>Top contributor: rainfall +45</td><td>The model leaned on rainfall for this prediction.</td><td>Rainfall <em>caused</em> the increase.</td></tr>
+    <tr><td>Level alert fired</td><td>Last 4 weeks unusually high <em>for this region's own history</em> — verify.</td><td>A confirmed outbreak.</td></tr>
+  </table>
+
+  <h3>Known limitations (v0.1)</h3>
+  <ul>
+    <li><strong>Environmental persistence:</strong> forecasts hold weather/vegetation at the last observed value; genuine rainfall shocks will not be anticipated.</li>
+    <li><strong>Direct (non-recursive) horizons:</strong> each horizon is a separate model; an 8-week forecast does not internally compound the 1–4 week ones.</li>
+    <li><strong>Intervals are uncalibrated</strong> Gaussian approximations from test residuals.</li>
+    <li><strong>Regional dummy coverage:</strong> a region absent at training time gets no dedicated dummy — add history for all 16 regions before real use.</li>
+    <li><strong>Minimum history:</strong> alert rules need ≥ 30 weeks; lag construction consumes the first 4+ weeks per region.</li>
+    <li><strong>Demo data are synthetic</strong> (with a scripted late-season upswing to exercise alerts) and always labelled.</li>
+    <li><strong>Genomics/Resistance modules are descriptive scaffolds</strong> awaiting validated data; a detected marker is not phenotypic resistance.</li>
+  </ul>
+
+  <div class="warn"><strong>Bottom line:</strong> P-TRANSMIT AI supports research and surveillance judgement. Predictions are not diagnoses and must not independently determine treatment or public-health action.</div>
+
+  <h3>Quick troubleshooting</h3>
+  <table class="grid">
+    <tr><th style="width:38%">Symptom</th><th>Fix</th></tr>
+    <tr><td>Dashboard blank / no forecast</td><td>No models trained yet → Model Laboratory → <strong>Train</strong>. (A crash boundary now shows an inline error instead of a blank page.)</td></tr>
+    <tr><td>Forecast column shows "—"</td><td>Same as above; also check the selected dataset matches the trained artifact (ds id).</td></tr>
+    <tr><td>First page load takes ~50 s</td><td>Free-tier instance was asleep — first request wakes it; subsequent loads are fast.</td></tr>
+    <tr><td>Alerts scan returns nothing</td><td>Signals are relative and rare by design; ensure ≥30 weeks of history and that open alerts already cover the region/type.</td></tr>
+    <tr><td>Accounts/data gone after redeploy</td><td>Ephemeral storage — demo data re-seeds; re-train models and re-upload files.</td></tr>
+    <tr><td>Upload rejected</td><td>Surveillance uploads need <code>region</code> + <code>week_start_date</code> + <code>malaria_cases</code> (synonyms accepted); check the quality report for mapping issues.</td></tr>
+  </table>
+</section>
+
+<!-- ================= APPENDIX ================= -->
+<section class="part">
+  <h2>Appendix</h2>
+
+  <h3>A. Anatomy of a trained artifact</h3>
+  <p>File: <code>models/transmission_&lt;type&gt;_h&lt;horizon&gt;_ds&lt;dataset_id&gt;.joblib</code> containing:</p>
+  <table class="grid">
+    <tr><th style="width:30%">Field</th><th>Contents</th></tr>
+    <tr><td><code>model</code></td><td>The fitted scikit-learn / XGBoost estimator.</td></tr>
+    <tr><td><code>model_type, horizon</code></td><td>Which algorithm and lead time it serves.</td></tr>
+    <tr><td><code>feature_names</code></td><td>Exact column order the model expects (lags, environment, season, region dummies).</td></tr>
+    <tr><td><code>metrics</code></td><td>MAE, RMSE, MAPE, sMAPE, R², residual_std, n_test, fit_seconds.</td></tr>
+    <tr><td><code>feature_importance</code></td><td>Permutation-importance ranking on held-out weeks.</td></tr>
+    <tr><td><code>train_weeks, test_weeks</code></td><td>The precise chronological split used — reproducibility proof.</td></tr>
+    <tr><td><code>seed, software, trained_at</code></td><td>Random seed, Python/scikit-learn/XGBoost/pandas/numpy versions, UTC timestamp.</td></tr>
+  </table>
+
+  <h3>B. Forecast row fields</h3>
+  <p>
+    <code>region</code>, <code>horizon_weeks</code>, <code>last_observed_week</code>,
+    <code>forecast_week</code>, <code>predicted_cases</code> (clipped ≥ 0),
+    <code>interval_low</code>/<code>interval_high</code> (±1.96·residual_std),
+    <code>risk_category</code>, <code>model_type</code>, <code>interval_method</code> —
+    plus the response-level <code>assumptions</code> string (environmental persistence).
+  </p>
+
+  <h3>C. Glossary</h3>
+  <table class="grid">
+    <tr><th style="width:24%">Term</th><th>Meaning</th></tr>
+    <tr><td>Horizon (h)</td><td>How many weeks ahead are being predicted (1, 2, 4, 8).</td></tr>
+    <tr><td>Lag</td><td>A past value of the same series (e.g. cases one week ago).</td></tr>
+    <tr><td>Lead / target_lead</td><td>The future value being predicted (shift −h).</td></tr>
+    <tr><td>Temporal split</td><td>Train on earlier weeks, test on later weeks — no shuffle, no leakage.</td></tr>
+    <tr><td>Quantile (p50/p75/p90)</td><td>The value below which 50/75/90% of historical observations fall — the basis of relative risk bands.</td></tr>
+    <tr><td>Permutation importance</td><td>How much held-out accuracy drops when a feature's values are shuffled — a model-agnostic "who matters" ranking.</td></tr>
+    <tr><td>SHAP</td><td>Game-theory-based feature attribution for tree models; used when the optional <code>shap</code> package is installed.</td></tr>
+    <tr><td>Residual</td><td>Prediction − observed on held-out weeks; residual_std sizes the intervals.</td></tr>
+    <tr><td>Provenance</td><td>The recorded context of a training run (data, split, seed, versions) that makes it reproducible.</td></tr>
+  </table>
+
+  <div class="foot">
+    P-TRANSMIT AI · Ghana Plasmodium Intelligence Platform · v0.1.0 · Generated 3 October 2026 from
+    <code>backend/app/ml/transmission.py</code> and <code>backend/app/services/alerts.py</code> ·
+    Code MIT · Boundaries geoBoundaries gbOpen CC-BY 4.0 · Research and surveillance decision support — not a diagnostic device.
+  </div>
+</section>
+
+</body>
+</html>
